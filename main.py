@@ -47,19 +47,23 @@ def print_response(
         verbose: A boolean indicating whether to print verbose output.
 
     Raises:
-        RuntimeError: If the response usage is None.
+        RuntimeError: If verbose output is enabled and response usage is None.
     """
-    if response.usage is None:
+    if not verbose:
+        print(response.choices[0].message.content)  # noqa: T201
+        return
+
+    usage = response.usage
+
+    if usage is None:
         error_message = (
             "Response usage is None. Unable to retrieve token usage information."
         )
         raise RuntimeError(error_message)
 
-    if verbose:
-        print(f"User prompt: {user_prompt}")  # noqa: T201
-        print(f"Prompt tokens: {response.usage.prompt_tokens}")  # noqa: T201
-        print(f"Response tokens: {response.usage.completion_tokens}")  # noqa: T201
-
+    print(f"User prompt: {user_prompt}")  # noqa: T201
+    print(f"Prompt tokens: {usage.prompt_tokens}")  # noqa: T201
+    print(f"Response tokens: {usage.completion_tokens}")  # noqa: T201
     print(response.choices[0].message.content)  # noqa: T201
 
 
