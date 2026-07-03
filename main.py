@@ -1,6 +1,7 @@
 # Copyright (c) 2026 RareBird15
 """This file is part of ai-agent."""
 
+import argparse
 import os
 
 from dotenv import load_dotenv
@@ -16,6 +17,10 @@ def main() -> None:
     Raises:
         RuntimeError: If the OPENROUTER_API_KEY is not set in the environment variables.
     """
+    parser = argparse.ArgumentParser(description="AI Agent Command Line Interface")
+    parser.add_argument("user_prompt", type=str, help="User prompt for the AI agent")
+    args = parser.parse_args()
+
     if not api_key:
         error_message = "OPENROUTER_API_KEY is not set in the environment variables."
         raise RuntimeError(error_message)
@@ -30,11 +35,18 @@ def main() -> None:
         messages=[
             {
                 "role": "user",
-                "content": "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum.",  # noqa: E501
+                "content": args.user_prompt,
             },
         ],
     )
 
+    if response.usage is None:
+        error_message = (
+            "Response usage is None. Unable to retrieve token usage information."
+        )
+        raise RuntimeError(error_message)
+    print(f"Prompt tokens: {response.usage.prompt_tokens}")  # noqa: T201
+    print(f"Response tokens: {response.usage.completion_tokens}")  # noqa: T201
     print(response.choices[0].message.content)  # noqa: T201
 
 
