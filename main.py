@@ -10,6 +10,8 @@ from typing import TYPE_CHECKING
 from dotenv import load_dotenv
 from openai import OpenAI
 
+from prompts import system_prompt
+
 if TYPE_CHECKING:
     from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
@@ -30,6 +32,7 @@ def generate_content(
     return client.chat.completions.create(
         model="openrouter/free",
         messages=messages,
+        temperature=0,
     )
 
 
@@ -91,6 +94,7 @@ def main() -> None:
     )
 
     messages: list[ChatCompletionMessageParam] = [
+        {"role": "system", "content": system_prompt},
         {"role": "user", "content": args.user_prompt},
     ]
     response = generate_content(client, messages)
