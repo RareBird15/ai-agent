@@ -3,6 +3,8 @@
 
 import os
 
+from openai.types.chat import ChatCompletionToolUnionParam
+
 from config import MAX_CHARS
 
 
@@ -37,6 +39,31 @@ def get_file_content(working_directory: str, file_path: str) -> str:
                 content += (
                     f'[...File "{file_path}" truncated at {MAX_CHARS} characters]'
                 )
-        return content
     except (OSError, ValueError) as e:
         return f"Error: {e}"
+    else:
+        return content
+
+
+schema_get_file_content: ChatCompletionToolUnionParam = {
+    "type": "function",
+    "function": {
+        "name": "get_file_content",
+        "description": (
+            "Retrieves the content of a specified file relative to the working "
+            "directory, with a maximum character limit"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": (
+                        "The path to the file relative to the working directory"
+                    ),
+                },
+            },
+            "required": ["file_path"],
+        },
+    },
+}

@@ -3,6 +3,8 @@
 
 import os
 
+from openai.types.chat import ChatCompletionToolUnionParam
+
 
 def write_file(working_directory: str, file_path: str, content: str) -> str:
     """Write content to a file.
@@ -40,3 +42,32 @@ def write_file(working_directory: str, file_path: str, content: str) -> str:
         )
     except (OSError, ValueError) as e:
         return f"Error: {e}"
+
+
+schema_write_file: ChatCompletionToolUnionParam = {
+    "type": "function",
+    "function": {
+        "name": "write_file",
+        "description": (
+            "Writes content to a specified file relative to the working directory, "
+            "creating any necessary parent directories"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": (
+                        "The path to the file to write, relative to the working "
+                        "directory"
+                    ),
+                },
+                "content": {
+                    "type": "string",
+                    "description": "The content to write to the file",
+                },
+            },
+            "required": ["file_path", "content"],
+        },
+    },
+}
